@@ -10,6 +10,8 @@ use BeastBytes\Mermaid\StateDiagram\State;
 use BeastBytes\Mermaid\StateDiagram\StateDiagram;
 use BeastBytes\Mermaid\StateDiagram\Transition;
 
+defined('COMMENT') or define('COMMENT', 'comment');
+
 test('State diagram', function () {
     $crash = (new State('Crash'))->withStyleClass('classDef2');
     $moving = (new State('Moving'))->withStyleClass('classDef0');
@@ -19,6 +21,7 @@ test('State diagram', function () {
         . "---\n"
         . "title: Simple sample\n"
         . "---\n"
+        . '%% ' . COMMENT . "\n"
         . "stateDiagram-v2\n"
         . "  state &quot;Crash&quot; as _Crash:::classDef2\n"
         . "  state &quot;Moving&quot; as _Moving:::classDef0\n"
@@ -35,7 +38,9 @@ test('State diagram', function () {
         . '</pre>'
     ;
 
-    expect((new StateDiagram('Simple sample'))
+    expect((new StateDiagram())
+        ->withComment(COMMENT)
+        ->withTitle('Simple sample')
         ->withState($crash, $moving, $still)
         ->withTransition(
             new Transition(to: $still),

@@ -11,15 +11,23 @@ use BeastBytes\Mermaid\StateDiagram\NotePosition;
 use BeastBytes\Mermaid\StateDiagram\State;
 use BeastBytes\Mermaid\StateDiagram\Transition;
 
-const STYLE_CLASS = 'style_class';
+defined('COMMENT') or define('COMMENT', 'comment');
+defined('STYLE_CLASS') or define('STYLE_CLASS', 'style_class');
 
 test('simple state', function () {
     $state = new State('s2');
     expect($state->getId())
         ->toBe('_s2')
-    ;
-    expect($state->render(''))
+        ->and($state->render(''))
         ->toBe('state "s2" as _s2')
+    ;
+});
+
+test('state with comment', function () {
+    $state = (new State('s2'))->withComment(COMMENT);
+
+    expect($state->render(''))
+        ->toBe('%% ' . COMMENT . "\nstate \"s2\" as _s2")
     ;
 });
 
@@ -27,8 +35,7 @@ test('state with description', function () {
     $state = new State('s2', 'This is a state description');
     expect($state->getId())
         ->toBe('_s2')
-    ;
-    expect($state->render(''))
+        ->and($state->render(''))
         ->toBe('state "This is a state description" as _s2')
     ;
 });

@@ -8,11 +8,13 @@ declare(strict_types=1);
 
 namespace BeastBytes\Mermaid\StateDiagram;
 
+use BeastBytes\Mermaid\CommentTrait;
 use BeastBytes\Mermaid\NodeInterface;
 use BeastBytes\Mermaid\StyleClassTrait;
 
 abstract class BaseState implements NodeInterface
 {
+    use CommentTrait;
     use StyleClassTrait;
 
     public function __construct(private string $id)
@@ -26,9 +28,11 @@ abstract class BaseState implements NodeInterface
 
     public function render(string $indentation): string
     {
+        $output = [];
         $classname = get_class($this);
 
-        return $indentation
+        $this->renderComment($indentation, $output);
+        $output[] = $indentation
             . 'state '
             . $this->getId()
             . $this->getStyleClass()
@@ -36,5 +40,7 @@ abstract class BaseState implements NodeInterface
             . strtolower(substr($classname, strrpos($classname, '\\') + 1))
             . '>>'
         ;
+
+        return implode("\n", $output);
     }
 }

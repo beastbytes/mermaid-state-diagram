@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace BeastBytes\Mermaid\StateDiagram;
 
 use BeastBytes\Mermaid\ClassDefTrait;
+use BeastBytes\Mermaid\CommentTrait;
 use BeastBytes\Mermaid\Direction;
 use BeastBytes\Mermaid\DirectionTrait;
 use BeastBytes\Mermaid\Mermaid;
@@ -19,6 +20,7 @@ use Stringable;
 
 final class StateDiagram implements MermaidInterface, Stringable
 {
+    use CommentTrait;
     use ClassDefTrait;
     use DirectionTrait;
     use RenderItemsTrait;
@@ -27,12 +29,6 @@ final class StateDiagram implements MermaidInterface, Stringable
     use TransitionTrait;
 
     private const TYPE = 'stateDiagram-v2';
-
-    public function __construct(
-        private readonly string $title = ''
-    )
-    {
-    }
 
     public function __toString(): string
     {
@@ -43,25 +39,18 @@ final class StateDiagram implements MermaidInterface, Stringable
     {
         $output = [];
 
-        if ($this->title !== '') {
-            $output[] = $this->getTitle();
-        }
+        $this->renderTitle($output);
+        $this->renderComment('', $output);
 
         $output[] = self::TYPE;
 
         if ($this->direction !== Direction::TB) {
-            $output[] = $this->renderDirection(Mermaid::INDENTATION);
+            $output[] = Mermaid::INDENTATION . $this->getDirection();
         }
 
-        $output[] = $this->renderItems($this->states, '');
-
-        if (count($this->transitions) > 0) {
-            $output[] = $this->renderItems($this->transitions, '');
-        }
-
-        if (!empty($this->classDefs)) {
-            $output[] = $this->renderClassDefs(Mermaid::INDENTATION);
-        }
+        $this->renderItems($this->states, '', $output);
+        $this->renderItems($this->transitions, '', $output);
+        $this->renderClassDefs($output);
 
         return Mermaid::render($output);
     }

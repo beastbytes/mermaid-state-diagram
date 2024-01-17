@@ -25,8 +25,8 @@ final class Group
         $indentation = substr($indentation, 0, strlen(Mermaid::INDENTATION) * -1);
         $output = [];
 
-        $output[] = $this->renderItems($this->states, $indentation);
-        $output[] = $this->renderItems($this->transitions, $indentation);
+        $this->renderItems($this->states, $indentation,$output);
+        $this->renderItems($this->transitions, $indentation, $output);
         $output[] = $indentation . self::CONCURRENCY_OPERATOR;
 
         return implode("\n", $output);
