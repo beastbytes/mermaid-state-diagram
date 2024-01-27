@@ -35,7 +35,7 @@ final class StateDiagram implements MermaidInterface, Stringable
         return $this->render();
     }
 
-    public function render(): string
+    public function render(array $attributes = []): string
     {
         $output = [];
 
@@ -52,6 +52,6 @@ final class StateDiagram implements MermaidInterface, Stringable
         $this->renderItems($this->transitions, '', $output);
         $this->renderClassDefs($output);
 
-        return Mermaid::render($output);
+        return Mermaid::render($output, $attributes);
     }
 }
