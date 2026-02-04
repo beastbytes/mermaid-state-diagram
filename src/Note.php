@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright Copyright © 2024 BeastBytes - All rights reserved
- * @license BSD 3-Clause
- */
 
 declare(strict_types=1);
 
@@ -12,6 +8,12 @@ use BeastBytes\Mermaid\Mermaid;
 
 final class Note
 {
+    public const string NOTE = <<<'NOTE'
+%snote %s of %s
+%1$s%s%s
+%1$send note
+NOTE;
+
     public function __construct(
         private readonly string $note,
         private readonly NotePosition $position
@@ -19,14 +21,16 @@ final class Note
     {
     }
 
-    /** @internal  */
-    public function render(string $indentation, BaseState $state): string
+    /** @internal */
+    public function render(string $indentation, State $state): string
     {
-        $output = [];
-        $output[] = $indentation . 'note ' .  $this->position->value . ' of ' . $state->getId();
-        $output[] = $indentation . Mermaid::INDENTATION . $this->note;
-        $output[] = $indentation . 'end note';
-
-        return implode("\n", $output);
+        return sprintf(
+            self::NOTE,
+            $indentation,
+            $this->position->name,
+            $state->getId(),
+            Mermaid::INDENTATION,
+            $this->note
+        );
     }
 }

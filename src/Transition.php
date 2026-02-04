@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright Copyright © 2024 BeastBytes - All rights reserved
- * @license BSD 3-Clause
- */
 
 declare(strict_types=1);
 
@@ -10,17 +6,19 @@ namespace BeastBytes\Mermaid\StateDiagram;
 
 final class Transition
 {
-    private const START_END = '[*]';
+    private const string LABEL = ' : %s';
+    private const string START_END = '[*]';
+    private const string TRANSITION = '%s --> %s%s';
 
     /**
-     * @param BaseState|null $from The state the transition is from, or NULL for a start state
-     * @param BaseState|null $to The state the transition is to, or NULL for an end state
-     * @param string $label Label for the transition
+     * @param ?StateInterface $from The state to transition from; default - start state
+     * @param ?StateInterface $to The state to transition to; default - end state
+     * @param ?string $label Label for the transition; default - no label
      */
     public function __construct(
-        private readonly ?BaseState $from = null,
-        private readonly ?BaseState $to = null,
-        private readonly string $label = ''
+        private readonly ?StateInterface $from = null,
+        private readonly ?StateInterface $to = null,
+        private readonly ?string $label = null
     )
     {
     }
@@ -28,10 +26,11 @@ final class Transition
     /** @internal */
     public function render(string $indentation): string
     {
-        return $indentation
-            . ($this->from === null ? self::START_END : $this->from->getId())
-            . ' --> '
-            . ($this->to === null ? self::START_END : $this->to->getId())
-            . (($this->label === '' ? '' : ' : ' . $this->label));
+        return $indentation .sprintf(
+            self::TRANSITION,
+                $this->from instanceof StateInterface ? $this->from->getId() : self::START_END,
+            $this->to instanceof StateInterface ? $this->to->getId() : self::START_END,
+            is_string($this->label) ? sprintf(self::LABEL, $this->label) : ''
+        );
     }
 }

@@ -1,29 +1,24 @@
 <?php
-/**
- * @copyright Copyright © 2024 BeastBytes - All rights reserved
- * @license BSD 3-Clause
- */
 
 declare(strict_types=1);
 
 namespace BeastBytes\Mermaid\StateDiagram;
 
 use BeastBytes\Mermaid\CommentTrait;
-use BeastBytes\Mermaid\NodeInterface;
+use BeastBytes\Mermaid\IdTrait;
 use BeastBytes\Mermaid\StyleClassTrait;
 
-abstract class BaseState implements NodeInterface
+abstract class BaseState implements StateInterface
 {
     use CommentTrait;
+    use IdTrait;
     use StyleClassTrait;
 
-    public function __construct(private string $id)
-    {
-    }
+    private const string STATE = '%sstate %s%s <<%s>>';
 
-    public function getId(): string
+    public function __construct(?string $id)
     {
-        return '_' . $this->id;
+        $this->id = $id;
     }
 
     public function render(string $indentation): string
@@ -31,16 +26,15 @@ abstract class BaseState implements NodeInterface
         $output = [];
         $classname = get_class($this);
 
-        $this->renderComment($indentation, $output);
-        $output[] = $indentation
-            . 'state '
-            . $this->getId()
-            . $this->getStyleClass()
-            . ' <<'
-            . strtolower(substr($classname, strrpos($classname, '\\') + 1))
-            . '>>'
-        ;
+        $output[] = $this->renderComment($indentation);
+        $output[] = sprintf(
+            self::STATE,
+            $indentation,
+            $this->getId(),
+            $this->getStyleClass(),
+            strtolower(substr($classname, strrpos($classname, '\\') + 1))
+        );
 
-        return implode("\n", $output);
+        return implode("\n", array_filter($output, fn($v) => !empty($v)));
     }
 }

@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace BeastBytes\Mermaid\StateDiagram;
 
-enum NotePosition: string
+enum NotePosition
 {
-    case Left = 'left';
-    case Right = 'right';
+    case left;
+    case right;
 }

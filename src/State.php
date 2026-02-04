@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright Copyright © 2024 BeastBytes - All rights reserved
- * @license BSD 3-Clause
- */
 
 declare(strict_types=1);
 
@@ -24,18 +20,20 @@ final class State extends BaseState
     use StyleClassTrait;
     use TransitionTrait;
 
+    private const string STATE = 'state "%s" as %s%s';
+
     private array $groups = [];
     private ?Note $note = null;
 
     public function __construct(
         string $id,
-        private string $description = ''
+        private ?string $label = null
     )
     {
         parent::__construct($id);
 
-        if ($this->description === '') {
-            $this->description = $id;
+        if ($this->label === null) {
+            $this->label = $id;
         }
     }
 
@@ -65,29 +63,34 @@ final class State extends BaseState
     {
         $output = [];
 
-        $this->renderComment($indentation, $output);
-        $output[] = $indentation . 'state "' . $this->description . '" as ' . $this->getId() . $this->getStyleClass();
+        $output[] = $this->renderComment($indentation);
+        $output[] = $indentation . sprintf(
+            self::STATE,
+            $this->label,
+            $this->getId(),
+            $this->getStyleClass()
+        );
 
-         if (count($this->states) > 0 || count($this->groups) > 0) {
-            $output[0] .= ' {';
+        if (count($this->states) > 0 || count($this->groups) > 0) {
+            $output[1] .= ' {';
 
-             if ($this->direction !== Direction::TB) {
-                 $output[] = $indentation . Mermaid::INDENTATION . $this->getDirection();
-             }
+            if ($this->direction !== Direction::topBottom) {
+                $output[] = $indentation . Mermaid::INDENTATION . $this->getDirection();
+            }
 
-             if (count($this->states) > 0) {
-                 $this->renderItems($this->states, $indentation, $output);
-                 $this->renderItems($this->transitions, $indentation, $output);
-             }
+            if (count($this->states) > 0) {
+                $output[] = $this->renderItems($this->states, $indentation);
+                $output[] = $this->renderItems($this->transitions, $indentation);
+            }
 
-             if (count($this->groups) > 0) {
-                $this->renderItems($this->groups, $indentation, $output);
+            if (count($this->groups) > 0) {
+                $output[] = $this->renderItems($this->groups, $indentation);
                 $groups = array_pop($output);
                 $output[] = substr($groups, 0, strrpos($groups, "\n")); // remove final concurrency operator
-             }
+            }
 
-             $output[] = $indentation . '}';
-         }
+            $output[] = $indentation . '}';
+        }
 
         if ($this->note !== null) {
             $output[] = $this
@@ -96,6 +99,6 @@ final class State extends BaseState
             ;
         }
 
-        return implode("\n", $output);
+        return implode("\n", array_filter($output, fn($v) => !empty($v)));
     }
 }

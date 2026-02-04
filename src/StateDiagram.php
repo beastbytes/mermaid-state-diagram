@@ -1,8 +1,4 @@
 <?php
-/**
- * @copyright Copyright © 2024 BeastBytes - All rights reserved
- * @license BSD 3-Clause
- */
 
 declare(strict_types=1);
 
@@ -10,15 +6,14 @@ namespace BeastBytes\Mermaid\StateDiagram;
 
 use BeastBytes\Mermaid\ClassDefTrait;
 use BeastBytes\Mermaid\CommentTrait;
+use BeastBytes\Mermaid\Diagram;
 use BeastBytes\Mermaid\Direction;
 use BeastBytes\Mermaid\DirectionTrait;
 use BeastBytes\Mermaid\Mermaid;
-use BeastBytes\Mermaid\MermaidInterface;
 use BeastBytes\Mermaid\RenderItemsTrait;
 use BeastBytes\Mermaid\TitleTrait;
-use Stringable;
 
-final class StateDiagram implements MermaidInterface, Stringable
+final class StateDiagram extends Diagram
 {
     use CommentTrait;
     use ClassDefTrait;
@@ -30,28 +25,22 @@ final class StateDiagram implements MermaidInterface, Stringable
 
     private const TYPE = 'stateDiagram-v2';
 
-    public function __toString(): string
-    {
-        return $this->render();
-    }
-
-    public function render(array $attributes = []): string
+    protected function renderDiagram(): string
     {
         $output = [];
 
-        $this->renderTitle($output);
-        $this->renderComment('', $output);
-
+        $output[] = $this->renderTitle('');
+        $output[] = $this->renderComment('');
         $output[] = self::TYPE;
 
-        if ($this->direction !== Direction::TB) {
+        if ($this->direction !== Direction::topBottom) {
             $output[] = Mermaid::INDENTATION . $this->getDirection();
         }
 
-        $this->renderItems($this->states, '', $output);
-        $this->renderItems($this->transitions, '', $output);
-        $this->renderClassDefs($output);
+        $output[] = $this->renderItems($this->states, '');
+        $output[] = $this->renderItems($this->transitions, '');
+        $output[] = $this->renderClassDefs();
 
-        return Mermaid::render($output, $attributes);
+        return implode("\n", array_filter($output, fn($v) => !empty($v)));
     }
 }

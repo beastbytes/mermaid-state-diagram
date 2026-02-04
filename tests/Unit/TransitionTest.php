@@ -10,7 +10,7 @@ test('simple transition', function () {
     $transition = new Transition($state1, $state2);
 
     expect($transition->render(''))
-        ->toBe('_s1 --> _s2')
+        ->toBe('s1 --> s2')
     ;
 });
 
@@ -20,7 +20,7 @@ test('transition with label', function () {
 
     $transition = new Transition($state1, $state2, 'Transition label');
     expect($transition->render(''))
-        ->toBe('_s1 --> _s2 : Transition label')
+        ->toBe('s1 --> s2 : Transition label')
     ;
 });
 
@@ -29,11 +29,11 @@ test('transition to/from terminus', function () {
 
     $transition = new Transition(null, $state1);
     expect($transition->render(''))
-        ->toBe('[*] --> _s1')
+        ->toBe('[*] --> s1')
     ;
 
     $transition = new Transition($state1, null);
     expect($transition->render(''))
-        ->toBe('_s1 --> [*]')
+        ->toBe('s1 --> [*]')
     ;
 });
