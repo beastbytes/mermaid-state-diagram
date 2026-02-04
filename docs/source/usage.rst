@@ -41,7 +41,7 @@ Groups within a State indicate `concurrency <https://mermaid.js.org/syntax/state
 Notes
 *****
 
-Notes can be added to States. A Note provide additional information about the State it is added to.
+Notes can be added to States. A Note provides additional information about the State it is added to.
 
 Transitions
 ***********
