@@ -11,7 +11,6 @@ use BeastBytes\Mermaid\Direction;
 use BeastBytes\Mermaid\DirectionTrait;
 use BeastBytes\Mermaid\Mermaid;
 use BeastBytes\Mermaid\RenderItemsTrait;
-use BeastBytes\Mermaid\TitleTrait;
 
 final class StateDiagram extends Diagram
 {
@@ -20,7 +19,6 @@ final class StateDiagram extends Diagram
     use DirectionTrait;
     use RenderItemsTrait;
     use StateTrait;
-    use TitleTrait;
     use TransitionTrait;
 
     private const TYPE = 'stateDiagram-v2';
@@ -29,7 +27,6 @@ final class StateDiagram extends Diagram
     {
         $output = [];
 
-        $output[] = $this->renderTitle('');
         $output[] = $this->renderComment('');
         $output[] = self::TYPE;
 
